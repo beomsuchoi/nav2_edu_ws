@@ -1,0 +1,6 @@
+# 실습 중 생성되는 파일
+maps/*
+!maps/.gitkeep
+__pycache__/
+*.pyc
+log/
