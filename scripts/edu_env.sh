@@ -22,3 +22,18 @@ fi
 # 이게 없으면 같은 PC/네트워크의 다른 gz sim과 /scan, /odom, /cmd_vel 이 섞입니다.
 export GZ_PARTITION="nav2_edu_${ROS_DOMAIN_ID}"
 export GZ_IP=127.0.0.1
+
+# 같은 도메인에서 실습(Nav2 시뮬레이션)이 이미 실행 중인지 확인.
+# 두 번 실행하면 두 번째 런치가 첫 번째의 /nav2_container 에 노드를 로드해서 둘 다 망가집니다.
+nav2_edu_require_free() {
+  local p
+  for p in $(pgrep -u "$USER" -f "^[^ ]*python3 [^ ]*/ros2 launch nav2_bringup "); do
+    if tr '\0' '\n' < "/proc/$p/environ" 2>/dev/null | grep -qx "ROS_DOMAIN_ID=${ROS_DOMAIN_ID}"; then
+      echo "[중단] 이미 실습이 실행 중입니다 (PID $p, ROS_DOMAIN_ID=${ROS_DOMAIN_ID})."
+      echo "       먼저 실행 중인 터미널에서 Ctrl+C로 종료하세요."
+      echo "       남은 프로세스 정리: pkill -f 'gz sim'; pkill -f component_container_isolated"
+      echo "       동시에 2개를 돌리려면 다른 도메인 사용: NAV2_EDU_DOMAIN_ID=43 $0"
+      exit 1
+    fi
+  done
+}

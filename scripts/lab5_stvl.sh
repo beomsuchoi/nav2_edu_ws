@@ -31,5 +31,6 @@ fi
 
 echo "[lab5] STVL 사용, params_file:=$PARAMS"
 echo "[lab5] RViz: Add → By topic → /local_costmap/voxel_grid (PointCloud2) 로 복셀 확인"
+nav2_edu_require_free
 exec ros2 launch nav2_bringup tb3_simulation_launch.py \
   params_file:="$PARAMS" headless:="${HEADLESS}" use_rviz:="${USE_RVIZ}" "$@"

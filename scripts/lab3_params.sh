@@ -28,5 +28,6 @@ python3 -c "import yaml,sys; yaml.safe_load(open(sys.argv[1]))" "$PARAMS" \
 echo "[lab3] params_file:=$PARAMS"
 grep -nE "inflation_radius|FollowPath:|^\s+plugin: \"nav2_.*Controller\"" "$PARAMS" | grep -v "#" || true
 
+nav2_edu_require_free
 exec ros2 launch nav2_bringup tb3_simulation_launch.py \
   params_file:="$PARAMS" headless:="${HEADLESS}" use_rviz:="${USE_RVIZ}" "$@"

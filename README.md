@@ -116,6 +116,12 @@ nav2_edu_ws/
 - 원본과 비교: `diff ~/nav2_edu_ws/params/nav2_params.orig.yaml ~/nav2_edu_ws/params/nav2_params.yaml`
 - 원본으로 되돌리기: `cp ~/nav2_edu_ws/params/nav2_params.orig.yaml ~/nav2_edu_ws/params/nav2_params.yaml`
 
+**RPP로 바꿨을 때 정상적으로 보이는 현상**: lab4를 돌리면 1번 → 2번 웨이포인트 구간(기둥 사이 좁은 틈)에서
+`RegulatedPurePursuitController detected collision ahead!` 경고와 `[ERROR] Controller patience exceeded`가 몇 번 나오고,
+로봇이 잠깐 멈췄다가(costmap 초기화·경로 재계산 복구 동작) 다시 출발해 결국 성공합니다.
+Pure Pursuit은 경로 코너를 질러가는 성질이 있어 좁은 틈에서 충돌 검사에 걸리기 쉽기 때문이며, MPPI(기본값)에서는 나오지 않습니다.
+→ **두 컨트롤러의 차이를 관찰하는 포인트**로 활용하세요. (`lookahead_dist`, `desired_linear_vel`을 바꿔가며 경고 횟수 비교)
+
 **정상 동작 시**: 실행할 때 터미널에 현재 `inflation_radius`와 컨트롤러 plugin 값이 출력됩니다. RViz costmap에서 벽 주변의 색칠된 띠 두께가 반경에 따라 달라지고, 경로가 벽에서 떨어지는 거리도 달라집니다.
 
 ## 실습 4: Python으로 웨이포인트 순회 (nav2_simple_commander)
@@ -163,6 +169,8 @@ python3 ~/nav2_edu_ws/scripts/lab4_commander.py
 | Gazebo 창이 검은 화면이거나 매우 느림 | 기본으로 Intel 내장 GPU로 렌더링됨 (PRIME on-demand) | `USE_NVIDIA=1 ./lab1_basic.sh` (드라이버 변경 없이 NVIDIA로 렌더링) |
 | Gazebo 창이 아예 안 뜸 / Qt·OpenGL 에러 (Wayland 세션) | Wayland 세션 | 로그인 화면 톱니바퀴에서 **"Ubuntu on Xorg"** 선택, 또는 `QT_QPA_PLATFORM=xcb ./lab1_basic.sh` |
 | 로봇이 혼자 움직이거나 odom/스캔이 튀는 등 이상하게 동작함 | 같은 PC의 다른 `gz sim`과 Gazebo 토픽이 섞임 (ROS_DOMAIN_ID로는 분리 안 됨) | 스크립트로 실행하면 자동 분리됨. `ros2 launch`를 직접 쓸 때는 `edu_env.sh`를 먼저 source |
+| `[중단] 이미 실습이 실행 중입니다` | 다른 터미널에서 실습이 이미 실행 중 (두 개를 같이 띄우면 서로의 노드가 섞여 둘 다 망가짐) | 실행 중인 실습을 `Ctrl+C`로 끄고 다시 실행 |
+| `Failed to bring up all requested nodes` / `Publisher already registered for node name` | 같은 도메인에서 Nav2가 2개 실행됨 (`ros2 launch`를 직접 실행한 경우 등) | 모두 끄고(아래 정리 명령) 하나만 실행 |
 | 이전 실습이 덜 꺼져서 로봇이 2대이거나 이상하게 동작함 | 남아 있는 `gz sim` 프로세스 | `pkill -f "gz sim"; pkill -f component_container_isolated` 후 재실행 |
 | `Ctrl+C`로 끌 때 `Magick: abort due to signal 11` / `process has died ... exit code -6` | Nav2 컨테이너가 종료 단계에서 크래시 (실행 중 동작에는 영향 없음) | 무시해도 됩니다. Ubuntu가 "시스템 프로그램 문제 발생" 창을 띄우면 닫으세요 |
 | lab3 실행 시 `YAML 문법 오류` | 수정하면서 들여쓰기가 깨짐 (탭 사용 등) | 스페이스 2칸 들여쓰기 확인. 안 되면 orig로 복구 |

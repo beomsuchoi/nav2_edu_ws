@@ -18,5 +18,6 @@ USE_RVIZ="${USE_RVIZ:-True}"
 
 echo "[lab1] headless:=${HEADLESS} use_rviz:=${USE_RVIZ}"
 echo "[lab1] 초기 위치(2D Pose Estimate)는 대략 x=-2.0, y=-0.5, 오른쪽(+x) 방향입니다."
+nav2_edu_require_free
 exec ros2 launch nav2_bringup tb3_simulation_launch.py \
   headless:="${HEADLESS}" use_rviz:="${USE_RVIZ}" "$@"

@@ -32,5 +32,6 @@ cat <<MSG
 [lab2] ---------------------------------------------------------------
 MSG
 
+nav2_edu_require_free
 exec ros2 launch nav2_bringup tb3_simulation_launch.py \
   slam:=True headless:="${HEADLESS}" use_rviz:="${USE_RVIZ}" "$@"
